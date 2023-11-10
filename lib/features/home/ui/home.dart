@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rest_api_movie_app/features/cart/ui/cart_page.dart';
+import 'package:rest_api_movie_app/features/wishlist/ui/wishlist_page.dart';
 
 import '../home_bloc.dart';
 
@@ -16,10 +20,18 @@ class _HomeState extends State<Home> {
     final HomeBloc homeBloc = HomeBloc();
     return BlocConsumer<HomeBloc, HomeState>(
       bloc: homeBloc,
-      // listenWhen: (previous, current) {},
-      // buildWhen: (previous, current) {},
+      listenWhen: (previous, current) => current is HomeActionState,
+      buildWhen: (previous, current) => current is! HomeActionState,
       listener: (context, state) {
-        // TODO: implement listener
+        if (state is HomeNavigateToCartPageActionState) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => const Cart()));
+        }
+
+        else if (state is HomeNavigateToWishlistPageActionState) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => const Wishlist()));
+        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -27,12 +39,16 @@ class _HomeState extends State<Home> {
             title: const Text('Grocery App'),
             actions: [
               IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.favorite_outline),
+                onPressed: () {
+                  homeBloc.add(HomeWishlistButtonNavigateEvent());
+                },
+                icon: const Icon(Icons.favorite_outline),
               ),
               IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.shopping_cart_outlined),
+                onPressed: () {
+                  homeBloc.add(HomeCartButtonNavigateEvent());
+                },
+                icon: const Icon(Icons.shopping_cart_outlined),
               ),
             ],
           ),
